@@ -12,7 +12,7 @@ module LogErrorHandler
 
     def start
       $stdin.each do |line|
-        tid = line[/^\[\d+\]/]
+        tid = line[@tracker.options[:tid_regexp]]
         @last_tid = tid || @last_tid
         write_to_file(line) if @last_tid
       end
@@ -24,12 +24,12 @@ module LogErrorHandler
       @tracker.tracking_logs[@last_tid] ||= {
         file: Tempfile.new("temps/#{@last_tid}"),
         status: :ok,
-        timestamp: Time.now
+        timestamp: Time.now.to_i
       }
-      text = line.sub(/^\[\d+\]/, '')
+      text = line.sub(@tracker.options[:tid_regexp], '')
       @tracker.tracking_logs[@last_tid][:file].write(text)
-      @tracker.tracking_logs[@last_tid][:status] = :error if text[/500.*error/i]
-      @tracker.tracking_logs[@last_tid][:timestamp] = Time.now
+      @tracker.tracking_logs[@last_tid][:status] = :error if text[@tracker.options[:error_regexp]]
+      @tracker.tracking_logs[@last_tid][:timestamp] = Time.now.to_i
     end
   end
 end

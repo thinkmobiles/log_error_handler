@@ -1,6 +1,56 @@
 #!/usr/bin/env ruby
 
 require 'bundler/setup'
-require 'log_error_handler'
+require_relative '../lib/log_error_handler'
+require 'optparse'
 
-LogErrorHandler::Tracker.start
+options = {}
+OptionParser.new do |opts|
+  opts.banner = "Library for tracking logs and send notification, when error finded\n" \
+                  "Usage: your_program_with_standard_stdout | log_error_handler\n" \
+                  "OR: log_error_handler -l path_to_your_logfile\n\n\n"
+
+  opts.on('-e', '--error_regexp=ERROR_REGEXP', Regexp, 'Defined regexp for detecting error.') do |ergxp|
+    options.merge!(error_regexp: ergxp)
+  end
+
+  opts.on('-t', '--tid_regexp=ERROR_REGEXP', Regexp, 'Defined regexp for detecting thread id.') do |tidrgxp|
+    options.merge!(tid_regexp: tidrgxp)
+  end
+
+  opts.on(
+    '--not_modify_timeout=NOT_MODIFY_TIMEOUT',
+    'Defined waiting timeout after last modifying, before close file.'
+  ) do |t|
+    options.merge!(not_modify_timeout: t.to_i)
+  end
+
+  opts.on(
+    '--log_file_tracker_waiting=LOG_FILE_TRACKER_WAITING',
+    'Defined timeout before new cycle to review writed logfiles.'
+  ) do |t|
+    options.merge!(log_file_tracker_waiting: t.to_i)
+  end
+
+  opts.on('--default', 'Show default config options') do
+    LogErrorHandler::Tracker.new.options.each do |key, value|
+      puts "#{key}: #{value}"
+    end
+    exit
+  end
+
+  opts.on('-l', '--log_file=LOG_FILE', 'Path to your log file') do |path|
+    IO.popen("tail -f #{path}") do |stdin|
+      $stdin = stdin
+      LogErrorHandler::Tracker.start(options)
+    end
+    exit
+  end
+
+  opts.on_tail('-h', '--help', 'Show this message') do
+    puts opts
+    exit
+  end
+end.parse!
+
+LogErrorHandler::Tracker.start(options)
