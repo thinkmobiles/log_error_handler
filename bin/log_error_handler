@@ -59,6 +59,10 @@ OptionParser.new do |opts|
     options[:error_message_key] = key
   end
 
+  opts.on('-d', '--daemonize', 'Daemonize') do
+    Process.daemon(true, true)
+  end
+
   opts.on(
     '--additional_params_from_file=ADDITIONAL_PARAMS_FROM_FILE',
     'Additional params from json file for send error message.'
