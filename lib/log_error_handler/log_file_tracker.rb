@@ -25,9 +25,10 @@ module LogErrorHandler
           next if Time.now.to_i - value[:timestamp] <= @tracker.options[:not_modify_timeout]
           if value[:status] == :error
             value[:file].rewind
-            puts value[:file].read
+            @tracker.out.puts value[:file].read
           end
           value[:file].close
+          value[:file].unlink
           @tracker.tracking_logs.delete(key)
         end
       end

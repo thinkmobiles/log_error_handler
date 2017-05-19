@@ -1,5 +1,7 @@
 module LogErrorHandler
   class StdinReader
+    TMP_DIR_NAME = 'log_error_handler'.freeze
+
     def initialize(tracker)
       @tracker = tracker
     end
@@ -11,6 +13,7 @@ module LogErrorHandler
     end
 
     def start
+      Dir.mkdir("/tmp/#{TMP_DIR_NAME}") unless Dir.exist?("/tmp/#{TMP_DIR_NAME}")
       $stdin.each do |line|
         tid = line[@tracker.options[:tid_regexp]]
         @last_tid = tid || @last_tid
@@ -22,7 +25,7 @@ module LogErrorHandler
 
     def write_to_file(line)
       @tracker.tracking_logs[@last_tid] ||= {
-        file: Tempfile.new("temps/#{@last_tid}"),
+        file: Tempfile.new("log_error_handler/#{@last_tid}"),
         status: :ok,
         timestamp: Time.now.to_i
       }
