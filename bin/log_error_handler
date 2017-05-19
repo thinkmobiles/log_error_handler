@@ -51,12 +51,19 @@ OptionParser.new do |opts|
     options[:http_method] = http_method
   end
 
+  opts.on('-a', '--additional_params=PARAMS', 'Additional params for send error message.') do |hash|
+    options[:additional_params] = JSON.parse(hash)
+  end
+
   opts.on('-k', '--key=KEY', 'Key for send error messages') do |key|
     options[:error_message_key] = key
   end
 
-  opts.on('-p', '--additional_params=ADDITIONAL_PARAMS', 'Additional params for send error message.') do |hash|
-    options[:additional_params] = JSON.parse(hash)
+  opts.on(
+    '--additional_params_from_file=ADDITIONAL_PARAMS_FROM_FILE',
+    'Additional params from json file for send error message.'
+  ) do |path|
+    options[:additional_params] = JSON.parse(File.open(path, &:read))
   end
 
   opts.on('-l', '--log_file=LOG_FILE', 'Path to your log file') do |path|
