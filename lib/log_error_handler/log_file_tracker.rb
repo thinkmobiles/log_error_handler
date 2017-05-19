@@ -21,6 +21,8 @@ module LogErrorHandler
     def log_file_tracker
       loop do
         sleep @tracker.options[:log_file_tracker_waiting]
+
+        @tracker.mutex.lock
         @tracker.tracking_logs.each do |key, value|
           next if Time.now.to_i - value[:timestamp] <= @tracker.options[:not_modify_timeout]
           if value[:status] == :error
@@ -31,6 +33,7 @@ module LogErrorHandler
           value[:file].unlink
           @tracker.tracking_logs.delete(key)
         end
+        @tracker.mutex.unlock
       end
     end
   end

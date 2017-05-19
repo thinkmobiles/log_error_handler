@@ -52,11 +52,11 @@ OptionParser.new do |opts|
   end
 
   opts.on('-k', '--key=KEY', 'Key for send error messages') do |key|
-    options[:key] = key
+    options[:error_message_key] = key
   end
 
-  opts.on('-p', '--additional_params=ADDITIONAL_PARAMS', Hash, 'Additional params for send error message.') do |hash|
-    options[:additional_params] = hash
+  opts.on('-p', '--additional_params=ADDITIONAL_PARAMS', 'Additional params for send error message.') do |hash|
+    options[:additional_params] = JSON.parse(hash)
   end
 
   opts.on('-l', '--log_file=LOG_FILE', 'Path to your log file') do |path|

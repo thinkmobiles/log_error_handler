@@ -1,6 +1,7 @@
 require_relative 'log_error_handler/version'
 require 'tempfile'
 require 'net/http'
+require 'json'
 require_relative 'log_error_handler/log_file_tracker'
 require_relative 'log_error_handler/stdin_reader'
 require_relative 'log_error_handler/http_out'
@@ -9,7 +10,7 @@ require_relative 'log_error_handler/out_factory'
 module LogErrorHandler
   class Tracker
     attr_accessor :tracking_logs
-    attr_reader :options, :out
+    attr_reader :options, :out, :mutex
 
     DEFAULT_OPTIONS = {
       error_regexp: /500.*error/i,
@@ -17,13 +18,14 @@ module LogErrorHandler
       not_modify_timeout: 3,
       log_file_tracker_waiting: 300,
       http_method: :post,
-      key: :message
+      error_message_key: :message
     }.freeze
 
     def initialize(opts = {})
       @tracking_logs = {}
       @options = DEFAULT_OPTIONS.merge(opts)
       @out = OutFactory.retrieve(@options)
+      @mutex = Mutex.new
     end
 
     def self.start(opts = {})
@@ -53,7 +55,7 @@ module LogErrorHandler
       @log_file_tracker.thread.kill
       @tracking_logs.each do |_key, value|
         value[:file].rewind
-        @tracker.out.puts value[:file].read if value[:status] == :error
+        @out.puts value[:file].read if value[:status] == :error
         value[:file].close
         value[:file].unlink
         @out.close

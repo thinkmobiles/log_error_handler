@@ -24,11 +24,14 @@ module LogErrorHandler
     private
 
     def write_to_file(line)
+      @tracker.mutex.lock
       @tracker.tracking_logs[@last_tid] ||= {
         file: Tempfile.new("log_error_handler/#{@last_tid}"),
         status: :ok,
         timestamp: Time.now.to_i
       }
+      @tracker.mutex.unlock
+
       text = line.sub(@tracker.options[:tid_regexp], '')
       @tracker.tracking_logs[@last_tid][:file].write(text)
       @tracker.tracking_logs[@last_tid][:status] = :error if text[@tracker.options[:error_regexp]]
