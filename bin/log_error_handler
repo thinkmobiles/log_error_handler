@@ -44,7 +44,7 @@ OptionParser.new do |opts|
   end
 
   opts.on('-u', '--url=URL', 'URL for send error messages') do |url|
-    options[:url] = URI(url)
+    options[:uri] = URI(url)
   end
 
   opts.on('-m', '--http_method=HTTP_METHOD', 'HTTP method for send error messages') do |http_method|
@@ -53,6 +53,10 @@ OptionParser.new do |opts|
 
   opts.on('-k', '--key=KEY', 'Key for send error messages') do |key|
     options[:key] = key
+  end
+
+  opts.on('-p', '--additional_params=ADDITIONAL_PARAMS', Hash, 'Additional params for send error message.') do |hash|
+    options[:additional_params] = hash
   end
 
   opts.on('-l', '--log_file=LOG_FILE', 'Path to your log file') do |path|

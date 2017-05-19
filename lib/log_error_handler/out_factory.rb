@@ -3,7 +3,7 @@ module LogErrorHandler
     def self.retrieve(opts)
       if opts[:file]
         File.new(opts[:file], 'w')
-      elsif opts[:url]
+      elsif opts[:uri]
         HttpOut.new(opts)
       else
         $stdout

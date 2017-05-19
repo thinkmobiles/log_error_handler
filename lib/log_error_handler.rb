@@ -1,5 +1,6 @@
 require_relative 'log_error_handler/version'
 require 'tempfile'
+require 'net/http'
 require_relative 'log_error_handler/log_file_tracker'
 require_relative 'log_error_handler/stdin_reader'
 require_relative 'log_error_handler/http_out'
