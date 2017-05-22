@@ -59,6 +59,10 @@ OptionParser.new do |opts|
     options[:error_message_key] = key
   end
 
+  opts.on('--debug_mode', 'Puts logs to standard stdout') do
+    options[:debug_mode] = true
+  end
+
   opts.on('-d', '--daemonize', 'Daemonize') do
     Process.daemon(true, true)
   end

@@ -33,6 +33,7 @@ module LogErrorHandler
       @tracker.mutex.unlock
 
       text = line.sub(@tracker.options[:tid_regexp], '')
+      $stdout.puts "#{@last_tid}: #{text}"  if @tracker.options[:debug_mode]
       @tracker.tracking_logs[@last_tid][:file].write(text)
       @tracker.tracking_logs[@last_tid][:status] = :error if text[@tracker.options[:error_regexp]]
       @tracker.tracking_logs[@last_tid][:timestamp] = Time.now.to_i

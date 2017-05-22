@@ -24,6 +24,7 @@ module LogErrorHandler
 
         @tracker.mutex.lock
         @tracker.tracking_logs.each do |key, value|
+          $stdout.puts "\n\nCheck file: #{key}. Status: #{value[:status]}\n\n" if @tracker.options[:debug_mode]
           next if Time.now.to_i - value[:timestamp] <= @tracker.options[:not_modify_timeout]
           if value[:status] == :error
             value[:file].rewind
