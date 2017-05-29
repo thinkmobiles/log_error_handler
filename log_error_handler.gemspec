@@ -8,7 +8,7 @@ Gem::Specification.new do |spec|
   spec.version       = LogErrorHandler::VERSION
   spec.authors       = ['Thinkmobiles']
   spec.email         = ['gashuk95@gmail.com']
-
+  spec.license       = 'MIT'
   spec.summary       = 'Gem for notification when logs have any errors.'
   spec.description   = 'Simple gem for server error notification. This gem use only logfile, and not depends on any languages'
   spec.homepage      = 'https://github.com/thinkmobiles/log_error_handler'

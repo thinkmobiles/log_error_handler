@@ -9,7 +9,9 @@ module LogErrorHandler
       data = @options[:additional_params] || {}
       data[@options[:error_message_key]] = Base64.encode64(message)
       @req.set_form_data(data)
-      Net::HTTP.new(@options[:uri].hostname, @options[:uri].port).request(@req)
+      http = Net::HTTP.new(@options[:uri].hostname, @options[:uri].port)
+      http.use_ssl = @options[:uri].scheme == 'https'
+      http.request(@req)
     end
 
     def close

@@ -14,6 +14,7 @@ module LogErrorHandler
 
     def start
       Dir.mkdir("/tmp/#{TMP_DIR_NAME}") unless Dir.exist?("/tmp/#{TMP_DIR_NAME}")
+      $stdout.puts 'Starting read input data...' if @tracker.options[:debug_mode]
       $stdin.each do |line|
         tid = line[@tracker.options[:tid_regexp]]
         @last_tid = tid || @last_tid
@@ -24,6 +25,7 @@ module LogErrorHandler
     private
 
     def write_to_file(line)
+      $stdout.puts 'Starting write to file' if @tracker.options[:debug_mode]
       @tracker.mutex.lock
       @tracker.tracking_logs[@last_tid] ||= {
         file: Tempfile.new("log_error_handler/#{@last_tid}"),
@@ -33,7 +35,7 @@ module LogErrorHandler
       @tracker.mutex.unlock
 
       text = line.sub(@tracker.options[:tid_regexp], '')
-      $stdout.puts "#{@last_tid}: #{text}"  if @tracker.options[:debug_mode]
+      $stdout.puts "#{@last_tid}: #{text}" if @tracker.options[:debug_mode]
       @tracker.tracking_logs[@last_tid][:file].write(text)
       @tracker.tracking_logs[@last_tid][:status] = :error if text[@tracker.options[:error_regexp]]
       @tracker.tracking_logs[@last_tid][:timestamp] = Time.now.to_i
